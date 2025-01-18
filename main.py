@@ -37,7 +37,7 @@ def main():
 
             for s in shots:
                 if a.has_collided(s):
-                    a.kill()
+                    a.split()
                     s.kill()
 
         for d in drawable:
