@@ -1,16 +1,22 @@
+from cgitb import text
 import sys
 import pygame
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from constants import *
+from gamestate import GameState
 from player import Player
 from shot import Shot
 
 
 def main():
+    pygame.font.init()
+    my_font = pygame.font.SysFont("Arial", 30)
+    text_surface = my_font.render("Hello World", False, (255, 255, 255))
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
+    gs = GameState()
     asteroids = pygame.sprite.Group()
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -23,6 +29,8 @@ def main():
     asteroid_field = AsteroidField()
     while True:
         screen.fill("black")
+        game_score = my_font.render(f"{gs.score}", False, (255, 255, 255))
+        screen.blit(game_score, (10, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -37,6 +45,7 @@ def main():
 
             for s in shots:
                 if a.has_collided(s):
+                    gs.update_score(a.radius)
                     a.split()
                     s.kill()
 
