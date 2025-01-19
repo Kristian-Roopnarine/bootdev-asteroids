@@ -10,7 +10,6 @@ from constants import (
 )
 from shot import Shot
 from weapons.default import DefaultWeapon
-from weapons.triple_shot import TripleShot
 
 
 class Player(CircleShape):

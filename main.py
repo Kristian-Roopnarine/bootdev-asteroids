@@ -23,8 +23,8 @@ from shot import Shot
 
 def main():
     pygame.font.init()
+    pygame.display.set_caption("Kristian's Asteroids")
     my_font = pygame.font.SysFont("Arial", 30)
-    text_surface = my_font.render("Hello World", False, (255, 255, 255))
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
@@ -45,36 +45,43 @@ def main():
     buff_field = BuffField()
     while True:
         screen.fill("black")
-        game_score = my_font.render(f"{gs.score}", False, (255, 255, 255))
-        screen.blit(game_score, (10, 0))
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_ESCAPE]:
+                    gs.PAUSED = not gs.PAUSED
             if event.type == pygame.QUIT:
                 return
+
         player.update(dt)
-        for u in updatable:
-            u.update(dt)
+        if not gs.PAUSED:
+            for u in updatable:
+                u.update(dt)
 
-        for a in asteroids:
-            if a.has_collided(player):
-                print("Game over!")
-                sys.exit(0)
+            for a in asteroids:
+                if a.has_collided(player):
+                    print("Game over!")
+                    sys.exit(0)
 
-            for s in shots:
-                if a.has_collided(s):
-                    gs.update_score(a.radius)
-                    a.split()
-                    s.kill()
+                for s in shots:
+                    if a.has_collided(s):
+                        gs.update_score(a.radius)
+                        a.split()
+                        s.kill()
 
-        for b in buffs:
-            for s in shots:
-                if b.has_collided(s):
-                    buff = b.get_buff()
-                    b.kill()
-                    s.kill()
-                    player.apply_buff(buff)
+            for b in buffs:
+                for s in shots:
+                    if b.has_collided(s):
+                        buff = b.get_buff()
+                        b.kill()
+                        s.kill()
+                        player.apply_buff(buff)
 
         for d in drawable:
             d.draw(screen)
+
+        game_score = my_font.render(gs.get_score(), False, (255, 255, 255))
+        screen.blit(game_score, (10, 0))
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
