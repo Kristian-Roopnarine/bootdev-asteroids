@@ -7,6 +7,13 @@ from shield import Shield
 from weapons.triple_shot import TripleShot
 
 
+"""
+to control spawn of buffs
+- track current number of buffs drawn
+- use number of buffs along with max_buff_count to prevent too many buffs from rendering
+"""
+
+
 class BuffField(pygame.sprite.Sprite):
     edges = [
         [
@@ -38,8 +45,15 @@ class BuffField(pygame.sprite.Sprite):
         self.spawn_timer = 0.0
 
     def spawn(self, radius, position):
-        random_buff = random.choice(BuffField.all_buffs)
-        b = Buff(position.x, position.y, radius, random_buff())
+        random_buff_cls = random.choice(BuffField.all_buffs)
+        random_buff = random_buff_cls()
+
+        # TODO: cycle through until we get a buff that is spawnable
+        if not random_buff_cls.is_spawnable():
+            return
+
+        random_buff.inc_current_spawn(1)
+        b = Buff(position.x, position.y, radius, random_buff)
 
     def update(self, dt):
         self.spawn_timer += dt

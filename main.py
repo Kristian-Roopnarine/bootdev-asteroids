@@ -12,10 +12,8 @@ from shot import Shot
 
 """
 1. Explosion Effect for asterids
-2. Create different weapon types
 3. Make asteroids lumpy instead of perfectly round
     3.1 - will I have to update hit detection for this?
-4. Add shield power up
 5. Add speed power up
 6. Bombs that can be dropped
 """
@@ -97,6 +95,7 @@ def main():
                 for s in shots:
                     if b.has_collided(s):
                         buff = b.get_buff()
+                        buff.inc_current_spawn(-1)
                         b.kill()
                         s.kill()
                         player.apply_buff(buff)
