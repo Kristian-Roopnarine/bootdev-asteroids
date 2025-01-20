@@ -2,6 +2,7 @@ import pygame
 
 from circleshape import CircleShape
 from constants import (
+    PLAYER_INVINCIBILITY_CD,
     PLAYER_RADIUS,
     PLAYER_SHOOT_COOLDOWN,
     PLAYER_SHOOT_SPEED,
@@ -17,7 +18,11 @@ class Player(CircleShape):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
         self.global_cooldown = 0
+        self.invicibility_cooldown = 0
+        self.is_invincible = False
         self.weapon = DefaultWeapon()
+        self.shield = 5
+        self.lives = 1
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -33,9 +38,27 @@ class Player(CircleShape):
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
 
+    def update_lives(self, val):
+        if val < 0:
+            self.invicibility_cooldown = PLAYER_INVINCIBILITY_CD
+            self.is_invincible = True
+        self.lives += val
+
+    def update_shield(self, val):
+        if val < 0:
+            self.invicibility_cooldown = PLAYER_INVINCIBILITY_CD
+            self.is_invincible = True
+        self.shield += val
+
     def update(self, dt):
         keys = pygame.key.get_pressed()
         self.global_cooldown -= dt
+        if self.is_invincible:
+            self.invicibility_cooldown -= dt
+
+        if self.invicibility_cooldown < 0:
+            self.is_invincible = False
+            self.invicibility_cooldown = 0
 
         if keys[pygame.K_a]:
             self.rotate(-dt)
@@ -63,4 +86,7 @@ class Player(CircleShape):
         self.weapon.create_shot(self.position.x, self.position.y, self.rotation)
 
     def apply_buff(self, buff):
-        self.weapon = buff()
+        if buff.type == "weapon":
+            self.weapon = buff
+        if buff.type == "shield":
+            self.shield += buff.modify_stats()

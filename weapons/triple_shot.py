@@ -4,6 +4,12 @@ from shot import Shot
 
 
 class TripleShot:
+    def __init__(self):
+        self.buff_display_name = "..."
+        self.type = "weapon"
+        self.width = 0
+        self.color = "red"
+
     def create_shot(self, x, y, rotation):
         shot1 = Shot(x, y)
         shot1.velocity = pygame.Vector2(0, 1).rotate(rotation + 5) * PLAYER_SHOOT_SPEED

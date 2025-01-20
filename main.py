@@ -1,8 +1,8 @@
 from cgitb import text
 import sys
 import pygame
-from Buff import Buff
-from BuffField import BuffField
+from buff import Buff
+from buff_field import BuffField
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from constants import *
@@ -18,6 +18,16 @@ from shot import Shot
 4. Add shield power up
 5. Add speed power up
 6. Bombs that can be dropped
+"""
+
+"""
+1. Powerups:
+    - Different colors
+    - SPAWN_MAX on the field
+    - type
+        - weapon
+        - shield
+        - stat
 """
 
 
@@ -41,8 +51,10 @@ def main():
     Asteroid.containers = (asteroids, updatable, drawable)
     Player.containers = (updatable, drawable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
     asteroid_field = AsteroidField()
     buff_field = BuffField()
+
     while True:
         screen.fill("black")
         for event in pygame.event.get():
@@ -60,8 +72,20 @@ def main():
 
             for a in asteroids:
                 if a.has_collided(player):
-                    print("Game over!")
-                    sys.exit(0)
+                    if player.is_invincible:
+                        continue
+
+                    if player.shield > 0:
+                        print("shield absorbing")
+                        player.update_shield(-1)
+                        continue
+
+                    if player.lives > 0:
+                        player.update_lives(-1)
+
+                    if player.lives == 0:
+                        print("Game over!")
+                        sys.exit(0)
 
                 for s in shots:
                     if a.has_collided(s):
@@ -80,7 +104,11 @@ def main():
         for d in drawable:
             d.draw(screen)
 
-        game_score = my_font.render(gs.get_score(), False, (255, 255, 255))
+        game_score = my_font.render(
+            f"Score - {gs.get_score()} Lives - {player.lives} Shield Hits - {player.shield}",
+            False,
+            (255, 255, 255),
+        )
         screen.blit(game_score, (10, 0))
         pygame.display.flip()
         dt = clock.tick(60) / 1000

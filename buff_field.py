@@ -1,8 +1,9 @@
 import pygame
-from Buff import Buff
+from buff import Buff
 import random
 
 from constants import *
+from shield import Shield
 from weapons.triple_shot import TripleShot
 
 
@@ -30,12 +31,15 @@ class BuffField(pygame.sprite.Sprite):
         ],
     ]
 
+    all_buffs = [Shield, TripleShot]
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.spawn_timer = 0.0
 
     def spawn(self, radius, position):
-        b = Buff(position.x, position.y, radius, TripleShot)
+        random_buff = random.choice(BuffField.all_buffs)
+        b = Buff(position.x, position.y, radius, random_buff())
 
     def update(self, dt):
         self.spawn_timer += dt

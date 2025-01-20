@@ -9,9 +9,13 @@ class Buff(CircleShape):
         self.font = pygame.font.SysFont(None, 12)
 
     def draw(self, screen):
-        text_surface = self.font.render("TS", True, (255, 255, 255))
+        text_surface = self.font.render(
+            self.buff_mod.buff_display_name, True, (255, 255, 255)
+        )
         text_rect = text_surface.get_rect(center=(self.position.x, self.position.y))
-        pygame.draw.circle(screen, "white", self.position, self.radius, 2)
+        pygame.draw.circle(
+            screen, self.buff_mod.color, self.position, self.radius, self.buff_mod.width
+        )
         screen.blit(text_surface, text_rect)
 
     def update(self, dt):
